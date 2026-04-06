@@ -3,16 +3,19 @@
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { getLatestNews, type NewsItem } from "@/lib/news-data"
+import { getAllVijesti } from "@/lib/supabase-client"
 
 export function NewsGrid() {
-  const [cards, setCards] = useState<NewsItem[]>([])
+  const [cards, setCards] = useState<any[]>([])
   const [visibleCards, setVisibleCards] = useState<Set<number>>(new Set())
   const observerRef = useRef<IntersectionObserver | null>(null)
 
   useEffect(() => {
-    const news = getLatestNews(6)
-    setCards(news)
+    async function load() {
+      const news = await getAllVijesti()
+      setCards(news.slice(0, 6))
+    }
+    load()
   }, [])
 
   useEffect(() => {
@@ -89,7 +92,7 @@ export function NewsGrid() {
                 <div className="flex gap-4 mb-3 text-sm">
                   <span className="text-gray-600">{item.date}</span>
                   <span className="inline-block px-3 py-1 bg-green-100 text-green-800 rounded text-xs font-semibold">
-                    {item.categoryLabel}
+                    {item.category_label || item.categoryLabel}
                   </span>
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3 hover:text-green-800 transition-colors">

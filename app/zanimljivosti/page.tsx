@@ -141,7 +141,7 @@ export default function ZanimljivostiPage() {
                       <span className="text-xs text-gray-400">{fact.date}</span>
                       {/* Замена "Опширније" линка са линком на Lana Lana вијести умјесто детаљне странице занимљивости */}
                       <Link href="/news" className="text-green-700 hover:text-green-800 font-semibold text-sm">
-                        Вижу вијести →
+                        Види вијести →
                       </Link>
                     </div>
                   </article>
