@@ -135,7 +135,15 @@ export default function ZanimljivostiPage() {
                       </div>
                     </div>
 
-                    <p className="text-gray-600 text-sm leading-relaxed mb-4">{fact.fact}</p>
+                    <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                      {fact.fact?.split(/(https?:\/\/[^\s]+)/g).map((part: string, i: number) =>
+                        /^https?:\/\//.test(part) ? (
+                          <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-green-700 underline hover:text-green-900 break-all">
+                            {part}
+                          </a>
+                        ) : part
+                      )}
+                    </p>
 
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-gray-400">{fact.date}</span>
