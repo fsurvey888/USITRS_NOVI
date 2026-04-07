@@ -68,7 +68,7 @@ export function Hero() {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/vjeverica.png"
+            src="/vjeverica.png"
             alt="vjeverica"
             style={{
               width: "90px",
