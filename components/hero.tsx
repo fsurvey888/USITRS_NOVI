@@ -56,7 +56,7 @@ export function Hero() {
             animation:
               phase === "still"   ? "squirrelAppear 0.4s ease-out forwards" :
               phase === "jumping" ? "squirrelJump 3.5s ease-in-out forwards" :
-              phase === "flyoff"  ? "squirrelFlyoff 0.7s ease-in forwards" :
+              phase === "flyoff"  ? "squirrelFlyoff 0.25s ease-in forwards" :
               "none",
           }}
         >
@@ -90,9 +90,8 @@ export function Hero() {
         }
 
         @keyframes squirrelFlyoff {
-          0%   { transform: translateY(-45px) translateX(0px)    rotate(0deg);  opacity: 1; }
-          50%  { transform: translateY(-80px) translateX(150px)  rotate(20deg); opacity: 1; }
-          100% { transform: translateY(-30px) translateX(400px)  rotate(10deg); opacity: 0; }
+          0%   { transform: translateY(-45px) translateX(0px);   opacity: 1; }
+          100% { transform: translateY(-45px) translateX(600px); opacity: 0; }
         }
       `}</style>
     </section>
