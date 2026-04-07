@@ -12,7 +12,11 @@ const _inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Удружење шумарских инжењера и техничара Републике Српске",
   description: "Удружење посвећено развоју шумарства и заштити шумских ресурса.",
-    generator: 'v0.app'
+  generator: "v0.app",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 }
 
 export default function RootLayout({
