@@ -11,7 +11,7 @@ const _inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Удружење шумарских инжењера и техничара Републике Српске",
-  description: "Удружење посвеећено развоју шумарства и заштити шумских ресурса.",
+  description: "Удружење посвећено развоју шумарства и заштити шумских ресурса.",
     generator: 'v0.app'
 }
 

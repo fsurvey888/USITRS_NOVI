@@ -20,7 +20,16 @@ export default function DokumentiPage() {
   useEffect(() => {
     async function load() {
       const data = await getAllDokumenti()
-      setDocuments(data)
+      const sorted = [...data].sort((a, b) => {
+        const parseD = (s: string) => {
+          if (!s) return 0
+          const p = s.split(".")
+          if (p.length === 3) return new Date(`${p[2]}-${p[1]}-${p[0]}`).getTime()
+          return new Date(s).getTime() || 0
+        }
+        return parseD(b.upload_date) - parseD(a.upload_date)
+      })
+      setDocuments(sorted)
     }
     load()
   }, [])
@@ -39,7 +48,7 @@ export default function DokumentiPage() {
       <section className="bg-green-900 text-white py-16">
         <div className="max-w-6xl mx-auto px-6 lg:px-8">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Документи</h1>
-          <p className="text-xl text-green-100">Преузмите статуте, извјештаје, планове и фотографије</p>
+          <p className="text-xl text-green-100">Преузмите статут, правилнике, извјештаје, планове и фотографије</p>
         </div>
       </section>
 

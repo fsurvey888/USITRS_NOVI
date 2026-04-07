@@ -47,8 +47,8 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-green-900 border-b border-green-950 shadow-md">
-      <div className="w-full px-4">
-        <div className="flex justify-between items-start pt-2 pb-3">
+      <div className="max-w-6xl mx-auto px-6 lg:px-8">
+        <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-4">
             <Image src="/logo.png" alt="Logo" width={50} height={50} className="w-12 h-12 object-contain" />

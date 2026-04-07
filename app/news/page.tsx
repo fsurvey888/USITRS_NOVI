@@ -16,11 +16,34 @@ export default function NewsPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(true)
 
+  const parseDate = (dateStr: string): number => {
+    if (!dateStr) return 0
+    // Format DD.MM.YYYY
+    const parts = dateStr.split(".")
+    if (parts.length === 3) {
+      return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`).getTime()
+    }
+    return new Date(dateStr).getTime() || 0
+  }
+
+  const applyFiltersAndSort = (news: any[], category: string, sort: string) => {
+    let result = category === "all" ? [...news] : news.filter((item) => item.category === category)
+    if (sort === "oldest") {
+      result.sort((a, b) => parseDate(a.date) - parseDate(b.date))
+    } else if (sort === "category") {
+      result.sort((a, b) => (a.category || "").localeCompare(b.category || ""))
+    } else {
+      // newest (default)
+      result.sort((a, b) => parseDate(b.date) - parseDate(a.date))
+    }
+    return result
+  }
+
   useEffect(() => {
     async function load() {
       const data = await getAllVijesti()
       setAllNews(data)
-      setFiltered(data)
+      setFiltered(applyFiltersAndSort(data, "all", "newest"))
       setLoading(false)
     }
     load()
@@ -29,31 +52,13 @@ export default function NewsPage() {
   const handleCategoryFilter = (category: string) => {
     setSelectedCategory(category)
     setCurrentPage(1)
-    let result = [...allNews]
-    if (category !== "all") {
-      result = allNews.filter((item) => item.category === category)
-    }
-    setFiltered(result)
+    setFiltered(applyFiltersAndSort(allNews, category, sortBy))
   }
 
   const handleSort = (sort: string) => {
     setSortBy(sort)
     setCurrentPage(1)
-    const result = [...filtered]
-    if (sort === "oldest") {
-      result.reverse()
-    } else if (sort === "category") {
-      result.sort((a, b) => a.category.localeCompare(b.category))
-    } else {
-      const sorted = result.sort((a, b) => {
-        const dateA = new Date(a.date).getTime()
-        const dateB = new Date(b.date).getTime()
-        return dateB - dateA // Новије прво
-      })
-      setFiltered(sorted)
-      return
-    }
-    setFiltered(result)
+    setFiltered(applyFiltersAndSort(allNews, selectedCategory, sort))
   }
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE)

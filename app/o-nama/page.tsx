@@ -25,7 +25,7 @@ export default function AboutPage() {
       <section className="bg-green-900 text-white py-16">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h1 className="text-5xl font-bold mb-4">О удружењу</h1>
-          <p className="text-xl text-green-100">Удружење поsvећено развоју шуmarstva и заштити шумских ресурса</p>
+          <p className="text-xl text-green-100">Удружење посвећено развоју шумарства и заштити шумских ресурса</p>
         </div>
       </section>
 

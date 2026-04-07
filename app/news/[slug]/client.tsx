@@ -149,16 +149,7 @@ export default function NewsArticleClient({ article, allNews, slug }: any) {
 }
 
 function GalleryGrid({ images }: { images: string[] }) {
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
-
-  const prev = () => setSelectedIndex((i) => (i !== null ? (i - 1 + images.length) % images.length : 0))
-  const next = () => setSelectedIndex((i) => (i !== null ? (i + 1) % images.length : 0))
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowLeft") prev()
-    if (e.key === "ArrowRight") next()
-    if (e.key === "Escape") setSelectedIndex(null)
-  }
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
   return (
     <>
@@ -166,7 +157,7 @@ function GalleryGrid({ images }: { images: string[] }) {
         {images.map((image, index) => (
           <button
             key={index}
-            onClick={() => setSelectedIndex(index)}
+            onClick={() => setSelectedImage(image)}
             className="relative aspect-video bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
           >
             <Image
@@ -179,54 +170,20 @@ function GalleryGrid({ images }: { images: string[] }) {
         ))}
       </div>
 
-      {selectedIndex !== null && (
+      {selectedImage && (
         <div
           className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
-          onClick={() => setSelectedIndex(null)}
-          onKeyDown={handleKeyDown}
-          tabIndex={0}
+          onClick={() => setSelectedImage(null)}
         >
-          {/* Затвори */}
           <button
-            className="absolute top-4 right-4 text-white text-4xl hover:text-gray-300 z-10"
-            onClick={() => setSelectedIndex(null)}
+            className="absolute top-4 right-4 text-white text-4xl hover:text-gray-300"
+            onClick={() => setSelectedImage(null)}
           >
             ×
           </button>
-
-          {/* Бројач слика */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white text-sm bg-black/50 px-3 py-1 rounded-full">
-            {selectedIndex + 1} / {images.length}
+          <div className="relative w-full max-w-5xl aspect-video">
+            <Image src={selectedImage || "/placeholder.svg"} alt="Увећана слика" fill className="object-contain" />
           </div>
-
-          {/* Слика */}
-          <div
-            className="relative w-full max-w-5xl aspect-video"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Image
-              src={images[selectedIndex] || "/placeholder.svg"}
-              alt="Увећана слика"
-              fill
-              className="object-contain"
-            />
-          </div>
-
-          {/* Лијева стрелица */}
-          <button
-            className="absolute bottom-8 left-8 text-white bg-black/50 hover:bg-green-800 transition-colors rounded-full w-12 h-12 flex items-center justify-center text-2xl"
-            onClick={(e) => { e.stopPropagation(); prev() }}
-          >
-            ‹
-          </button>
-
-          {/* Десна стрелица */}
-          <button
-            className="absolute bottom-8 right-8 text-white bg-black/50 hover:bg-green-800 transition-colors rounded-full w-12 h-12 flex items-center justify-center text-2xl"
-            onClick={(e) => { e.stopPropagation(); next() }}
-          >
-            ›
-          </button>
         </div>
       )}
     </>

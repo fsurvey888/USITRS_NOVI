@@ -23,6 +23,13 @@ const categories = [
   { value: "nauka", label: "Наука" },
 ]
 
+const parseDate = (dateStr: string): number => {
+  if (!dateStr) return 0
+  const parts = dateStr.split(".")
+  if (parts.length === 3) return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`).getTime()
+  return new Date(dateStr).getTime() || 0
+}
+
 export default function ZanimljivostiPage() {
   const [allFacts, setAllFacts] = useState<any[]>([])
 
@@ -32,7 +39,8 @@ export default function ZanimljivostiPage() {
   useEffect(() => {
     async function load() {
       const facts = await getAllZanimljivosti()
-      setAllFacts(facts)
+      const sorted = [...facts].sort((a, b) => parseDate(b.date) - parseDate(a.date))
+      setAllFacts(sorted)
     }
     load()
   }, [])
@@ -52,7 +60,7 @@ export default function ZanimljivostiPage() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex items-center gap-2 text-sm">
             <Link href="/" className="text-gray-600 hover:text-green-700">
-              Поčетна
+              Почетна
             </Link>
             <span className="text-gray-400">→</span>
             <span className="text-green-700 font-semibold">Занимљивости</span>
@@ -64,7 +72,7 @@ export default function ZanimljivostiPage() {
       <section className="bg-white py-12">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h1 className="text-4xl font-bold text-green-900 mb-3">Занимљивости о шумама</h1>
-          <p className="text-lg text-gray-600">Откријте ѕанимљиве чињенице о шумама, дрвећу и шумарству</p>
+          <p className="text-lg text-gray-600">Откријте занимљиве чињенице о шумама, и новим технологијама у шумарству</p>
         </div>
       </section>
 
