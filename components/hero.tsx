@@ -86,12 +86,13 @@ export function Hero() {
           70%  { transform: translateY(0px)   scaleY(0.85); }
           80%  { transform: translateY(0px)   scaleY(1);    }
           90%  { transform: translateY(0px)   scaleY(0.85); }
-          100% { transform: translateY(-45px) scaleY(1.1);  }
+          95%  { transform: translateY(-45px) scaleY(1.1);  }
+          100% { transform: translateY(0px)   scaleY(0.85); }
         }
 
         @keyframes squirrelFlyoff {
-          0%   { transform: translateY(-45px) translateX(0px);   opacity: 1; }
-          100% { transform: translateY(-45px) translateX(600px); opacity: 0; }
+          0%   { transform: translateY(0px) translateX(0px);   opacity: 1; }
+          100% { transform: translateY(0px) translateX(600px); opacity: 0; }
         }
       `}</style>
     </section>
