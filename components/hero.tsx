@@ -90,9 +90,9 @@ export function Hero() {
         }
 
         @keyframes squirrelFlyoff {
-          0%   { transform: translateY(-45px) translateX(0px)   rotate(0deg);   opacity: 1; }
-          60%  { transform: translateY(-140px) translateX(60px)  rotate(15deg);  opacity: 1; }
-          100% { transform: translateY(-220px) translateX(120px) rotate(25deg);  opacity: 0; }
+          0%   { transform: translateY(-45px) translateX(0px)    rotate(0deg);  opacity: 1; }
+          50%  { transform: translateY(-80px) translateX(150px)  rotate(20deg); opacity: 1; }
+          100% { transform: translateY(-30px) translateX(400px)  rotate(10deg); opacity: 0; }
         }
       `}</style>
     </section>
