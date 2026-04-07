@@ -4,22 +4,19 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 
 export function Hero() {
-  const [phase, setPhase] = useState<"eating" | "running" | "gone">("eating")
+  const [phase, setPhase] = useState<"still" | "jumping" | "flyoff" | "gone">("still")
 
   useEffect(() => {
-    // Jede 3 sekunde, pa trči
-    const t1 = setTimeout(() => setPhase("running"), 3000)
-    // Nestane nakon što pretrči (4 sekunde trčanja)
-    const t2 = setTimeout(() => setPhase("gone"), 7000)
-    // Ponovi animaciju svakih 20 sekundi
-    const t3 = setTimeout(() => {
-      setPhase("eating")
-      const r1 = setTimeout(() => setPhase("running"), 3000)
-      const r2 = setTimeout(() => setPhase("gone"), 7000)
-      return () => { clearTimeout(r1); clearTimeout(r2) }
-    }, 20000)
-
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
+    const run = () => {
+      setPhase("still")
+      const t1 = setTimeout(() => setPhase("jumping"), 2000)   // čeka 2s pa skakuće
+      const t2 = setTimeout(() => setPhase("flyoff"), 5500)    // nakon skakanja odleti
+      const t3 = setTimeout(() => setPhase("gone"), 6200)      // nestane
+      const t4 = setTimeout(run, 18000)                        // ponovi za 18s
+      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4) }
+    }
+    const cleanup = run()
+    return cleanup
   }, [])
 
   return (
@@ -50,52 +47,52 @@ export function Hero() {
           style={{
             position: "absolute",
             bottom: "-30px",
+            right: "100px",
             zIndex: 20,
             userSelect: "none",
             pointerEvents: "none",
             width: "90px",
             height: "90px",
-            ...(phase === "eating"
-              ? {
-                  right: "80px",
-                  animation: "squirrelEat 1.2s ease-in-out infinite alternate",
-                }
-              : {
-                  right: "-100px",
-                  animation: "squirrelRun 8s linear forwards",
-                }),
+            animation:
+              phase === "still"   ? "squirrelAppear 0.4s ease-out forwards" :
+              phase === "jumping" ? "squirrelJump 3.5s ease-in-out forwards" :
+              phase === "flyoff"  ? "squirrelFlyoff 0.7s ease-in forwards" :
+              "none",
           }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/vjeverica.png"
-            alt="vjeverica"
-            style={{
-              width: "90px",
-              height: "90px",
-              objectFit: "contain",
-              ...(phase === "running" ? { transform: "scaleX(-1)" } : {}),
-            }}
+            alt=""
+            style={{ width: "90px", height: "90px", objectFit: "contain" }}
           />
         </div>
       )}
 
       <style>{`
-        @keyframes squirrelEat {
-          0%   { transform: translateY(0px); }
-          50%  { transform: translateY(-5px); }
-          100% { transform: translateY(0px); }
+        @keyframes squirrelAppear {
+          0%   { transform: translateY(30px); opacity: 0; }
+          100% { transform: translateY(0px);  opacity: 1; }
         }
 
-        @keyframes squirrelRun {
-          0%   { right: 80px; }
-          15%  { bottom: -26px; }
-          30%  { bottom: -30px; }
-          45%  { bottom: -26px; }
-          60%  { bottom: -30px; }
-          75%  { bottom: -26px; }
-          90%  { bottom: -30px; }
-          100% { right: calc(100% + 100px); bottom: -30px; }
+        @keyframes squirrelJump {
+          0%   { transform: translateY(0px)   scaleY(1);    }
+          10%  { transform: translateY(0px)   scaleY(0.85); }
+          20%  { transform: translateY(-45px) scaleY(1.1);  }
+          30%  { transform: translateY(0px)   scaleY(0.85); }
+          40%  { transform: translateY(0px)   scaleY(1);    }
+          50%  { transform: translateY(0px)   scaleY(0.85); }
+          60%  { transform: translateY(-45px) scaleY(1.1);  }
+          70%  { transform: translateY(0px)   scaleY(0.85); }
+          80%  { transform: translateY(0px)   scaleY(1);    }
+          90%  { transform: translateY(0px)   scaleY(0.85); }
+          100% { transform: translateY(-45px) scaleY(1.1);  }
+        }
+
+        @keyframes squirrelFlyoff {
+          0%   { transform: translateY(-45px) translateX(0px)   rotate(0deg);   opacity: 1; }
+          60%  { transform: translateY(-140px) translateX(60px)  rotate(15deg);  opacity: 1; }
+          100% { transform: translateY(-220px) translateX(120px) rotate(25deg);  opacity: 0; }
         }
       `}</style>
     </section>
