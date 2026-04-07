@@ -180,14 +180,14 @@ export default function NewsPage() {
                 className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
               >
                 <div className="flex flex-row gap-4 p-4">
-                  <div className="relative w-28 h-20 flex-shrink-0 rounded-md overflow-hidden bg-gray-100">
+                  <Link href={`/news/${item.slug}`} className="relative w-28 h-20 flex-shrink-0 rounded-md overflow-hidden bg-gray-100 block cursor-pointer">
                     <Image
                       src={item.image || "/placeholder.svg"}
                       alt={item.title}
                       fill
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                     />
-                  </div>
+                  </Link>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">

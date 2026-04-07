@@ -89,14 +89,14 @@ export function NewsGrid() {
                 visibleCards.has(index) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
               }`}
             >
-              <div className="relative w-full h-48 overflow-hidden bg-gray-100">
+              <Link href={`/news/${item.slug}`} className="relative w-full h-48 overflow-hidden bg-gray-100 block">
                 <Image
                   src={item.image || "/placeholder.svg"}
                   alt={item.title}
                   fill
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                 />
-              </div>
+              </Link>
               <div className="p-6">
                 <div className="flex gap-4 mb-3 text-sm">
                   <span className="text-gray-600">{item.date}</span>
