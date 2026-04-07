@@ -13,7 +13,16 @@ export function NewsGrid() {
   useEffect(() => {
     async function load() {
       const news = await getAllVijesti()
-      setCards(news.slice(0, 6))
+      const sorted = [...news].sort((a, b) => {
+        const parseDate = (d: string) => {
+          if (!d) return 0
+          const p = d.split(".")
+          if (p.length === 3) return new Date(`${p[2]}-${p[1]}-${p[0]}`).getTime()
+          return new Date(d).getTime() || 0
+        }
+        return parseDate(b.date) - parseDate(a.date)
+      })
+      setCards(sorted.slice(0, 6))
     }
     load()
   }, [])
