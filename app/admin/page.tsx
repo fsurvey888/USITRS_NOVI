@@ -4,7 +4,6 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Trash2, Edit, Plus, FileText, Sparkles, FolderOpen, Settings, Calendar } from "lucide-react"
-import { ADMIN_CONFIG } from "@/lib/admin-config"
 import {
   getAllVijesti,
   createVijest,
@@ -96,15 +95,25 @@ export default function AdminPage() {
     loadAll()
   }, [isLoggedIn])
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoginError("")
-    if (username === ADMIN_CONFIG.username && ADMIN_CONFIG.checkPassword(password)) {
-      localStorage.setItem("adminLoggedIn", "true")
-      setIsLoggedIn(true)
-      setPassword("")
-    } else {
-      setLoginError("Неиспрaвно корисничко ime или лозинка")
+    try {
+      const res = await fetch("/api/admin-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      })
+      if (res.ok) {
+        localStorage.setItem("adminLoggedIn", "true")
+        setIsLoggedIn(true)
+        setPassword("")
+      } else {
+        setLoginError("Неиспрaвно корисничко ime или лозинка")
+        setPassword("")
+      }
+    } catch {
+      setLoginError("Грешка при пријави. Покушајте поново.")
       setPassword("")
     }
   }

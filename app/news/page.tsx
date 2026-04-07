@@ -6,7 +6,7 @@ import Link from "next/link"
 import { ChevronLeft, ChevronRight, MessageCircle, Eye } from "lucide-react"
 import { getAllVijesti } from "@/lib/supabase-client"
 
-const ITEMS_PER_PAGE = 3
+const ITEMS_PER_PAGE = 6
 
 export default function NewsPage() {
   const [allNews, setAllNews] = useState<any[]>([])
@@ -177,10 +177,10 @@ export default function NewsPage() {
             {!loading && paginatedItems.map((item) => (
               <article
                 key={item.id}
-                className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
+                className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
               >
-                <div className="flex flex-col md:flex-row gap-6 p-6">
-                  <div className="relative w-full md:w-64 h-48 md:h-40 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                <div className="flex flex-row gap-4 p-4">
+                  <div className="relative w-28 h-20 flex-shrink-0 rounded-md overflow-hidden bg-gray-100">
                     <Image
                       src={item.image || "/placeholder.svg"}
                       alt={item.title}
@@ -189,37 +189,36 @@ export default function NewsPage() {
                     />
                   </div>
 
-                  <div className="flex-1">
-                    <div className="flex flex-wrap items-center gap-3 mb-3">
-                      <span className="text-sm text-gray-600">{item.date}</span>
-                      <span className="inline-block px-3 py-1 bg-green-100 text-green-800 rounded text-xs font-semibold">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                      <span className="text-xs text-gray-500">{item.date}</span>
+                      <span className="inline-block px-2 py-0.5 bg-green-100 text-green-800 rounded text-xs font-semibold">
                         {item.category_label || item.categoryLabel}
                       </span>
                     </div>
 
-                    <h2 className="text-2xl font-bold text-gray-900 mb-3 hover:text-green-800 transition-colors">
+                    <h2 className="text-base font-bold text-gray-900 mb-1 hover:text-green-800 transition-colors line-clamp-1">
                       {item.title}
                     </h2>
 
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{item.excerpt}</p>
+                    <p className="text-gray-600 text-xs mb-2 line-clamp-1">{item.excerpt}</p>
 
-                    <div className="flex items-center gap-4 mb-4 text-sm text-gray-600">
+                    <div className="flex items-center gap-3 text-xs text-gray-500">
                       <div className="flex items-center gap-1">
-                        <MessageCircle className="w-4 h-4" />
-                        <span>{item.comments} коментара</span>
+                        <MessageCircle className="w-3 h-3" />
+                        <span>{item.comments}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Eye className="w-4 h-4" />
-                        <span>{item.views} прегледа</span>
+                        <Eye className="w-3 h-3" />
+                        <span>{item.views}</span>
                       </div>
+                      <Link
+                        href={`/news/${item.slug}`}
+                        className="ml-auto text-green-800 font-semibold hover:translate-x-1 transition-transform"
+                      >
+                        Опширније →
+                      </Link>
                     </div>
-
-                    <Link
-                      href={`/news/${item.slug}`}
-                      className="inline-flex text-green-800 font-semibold hover:translate-x-1 transition-transform"
-                    >
-                      Опширније →
-                    </Link>
                   </div>
                 </div>
               </article>

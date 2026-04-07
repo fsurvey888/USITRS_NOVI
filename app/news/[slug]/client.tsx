@@ -3,36 +3,22 @@ import Image from "next/image"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useState, useEffect } from "react"
+import { updateVijest } from "@/lib/supabase-client"
 
 export default function NewsArticleClient({ article, allNews, slug }: any) {
   const [views, setViews] = useState(article.views || 0)
 
   useEffect(() => {
-    // Инкрементирај број прегледа при учитавању странице
     const viewKey = `news-view-${slug}`
     const lastView = localStorage.getItem(viewKey)
     const now = Date.now()
 
-    // Допусти само један преглед по часу по браузеру
+    // Jedan pregled po browseru na sat
     if (!lastView || now - parseInt(lastView) > 3600000) {
       localStorage.setItem(viewKey, now.toString())
-      
-      // Ажурирај вијест у localStorage
-      try {
-        const customNews = localStorage.getItem("customNews")
-        if (customNews) {
-          const parsed = JSON.parse(customNews)
-          const updated = parsed.map((item: any) => 
-            item.slug === slug 
-              ? { ...item, views: (item.views || 0) + 1 }
-              : item
-          )
-          localStorage.setItem("customNews", JSON.stringify(updated))
-          setViews((prev: number) => prev + 1)
-        }
-      } catch (error) {
-        console.error("[v0] Error updating views:", error)
-      }
+      const newViews = (article.views || 0) + 1
+      setViews(newViews)
+      updateVijest(article.id, { views: newViews })
     }
   }, [slug])
 
