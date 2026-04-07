@@ -51,8 +51,8 @@ export function Hero() {
             zIndex: 20,
             userSelect: "none",
             pointerEvents: "none",
-            width: "90px",
-            height: "90px",
+            width: "72px",
+            height: "72px",
             animation:
               phase === "still"   ? "squirrelAppear 2s ease-out forwards" :
               phase === "jumping" ? "squirrelJump 3.5s ease-in-out forwards" :
@@ -64,7 +64,7 @@ export function Hero() {
           <img
             src="/vjeverica.png"
             alt=""
-            style={{ width: "90px", height: "90px", objectFit: "contain" }}
+            style={{ width: "72px", height: "72px", objectFit: "contain" }}
           />
         </div>
       )}
