@@ -49,44 +49,53 @@ export function Hero() {
         <div
           style={{
             position: "absolute",
-            bottom: "12px",
-            fontSize: "2rem",
+            bottom: "-30px",
             zIndex: 20,
             userSelect: "none",
             pointerEvents: "none",
+            width: "90px",
+            height: "90px",
             ...(phase === "eating"
               ? {
-                  right: "60px",
-                  animation: "squirrelEat 0.4s ease-in-out infinite alternate",
+                  right: "80px",
+                  animation: "squirrelEat 1.2s ease-in-out infinite alternate",
                 }
               : {
-                  right: "-80px",
-                  animation: "squirrelRun 4s linear forwards",
+                  right: "-100px",
+                  animation: "squirrelRun 8s linear forwards",
                 }),
           }}
         >
-          {phase === "eating" ? "🐿️" : "🐿️"}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/vjeverica.png"
+            alt="vjeverica"
+            style={{
+              width: "90px",
+              height: "90px",
+              objectFit: "contain",
+              ...(phase === "running" ? { transform: "scaleX(-1)" } : {}),
+            }}
+          />
         </div>
       )}
 
       <style>{`
         @keyframes squirrelEat {
-          0%   { transform: translateY(0px) rotate(-5deg); }
-          100% { transform: translateY(-6px) rotate(5deg); }
+          0%   { transform: translateY(0px); }
+          50%  { transform: translateY(-5px); }
+          100% { transform: translateY(0px); }
         }
 
         @keyframes squirrelRun {
-          0%   { right: 60px;   transform: scaleX(-1) translateY(0px); }
-          10%  { transform: scaleX(-1) translateY(-4px); }
-          20%  { transform: scaleX(-1) translateY(0px); }
-          30%  { transform: scaleX(-1) translateY(-4px); }
-          40%  { transform: scaleX(-1) translateY(0px); }
-          50%  { transform: scaleX(-1) translateY(-4px); }
-          60%  { transform: scaleX(-1) translateY(0px); }
-          70%  { transform: scaleX(-1) translateY(-4px); }
-          80%  { transform: scaleX(-1) translateY(0px); }
-          90%  { transform: scaleX(-1) translateY(-4px); }
-          100% { right: calc(100% + 80px); transform: scaleX(-1) translateY(0px); }
+          0%   { right: 80px; }
+          15%  { bottom: -26px; }
+          30%  { bottom: -30px; }
+          45%  { bottom: -26px; }
+          60%  { bottom: -30px; }
+          75%  { bottom: -26px; }
+          90%  { bottom: -30px; }
+          100% { right: calc(100% + 100px); bottom: -30px; }
         }
       `}</style>
     </section>
