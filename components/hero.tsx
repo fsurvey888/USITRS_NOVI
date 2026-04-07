@@ -54,7 +54,7 @@ export function Hero() {
             width: "90px",
             height: "90px",
             animation:
-              phase === "still"   ? "squirrelAppear 0.4s ease-out forwards" :
+              phase === "still"   ? "squirrelAppear 2s ease-out forwards" :
               phase === "jumping" ? "squirrelJump 3.5s ease-in-out forwards" :
               phase === "flyoff"  ? "squirrelFlyoff 0.25s ease-in forwards" :
               "none",
@@ -71,7 +71,8 @@ export function Hero() {
 
       <style>{`
         @keyframes squirrelAppear {
-          0%   { transform: translateY(30px); opacity: 0; }
+          0%   { transform: translateY(40px); opacity: 0; }
+          60%  { transform: translateY(40px); opacity: 0; }
           100% { transform: translateY(0px);  opacity: 1; }
         }
 
