@@ -32,9 +32,9 @@ const parseDate = (dateStr: string): number => {
 
 export default function ZanimljivostiPage() {
   const [allFacts, setAllFacts] = useState<any[]>([])
-
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
+  const [expandedId, setExpandedId] = useState<number | null>(null)
 
   useEffect(() => {
     async function load() {
@@ -113,52 +113,62 @@ export default function ZanimljivostiPage() {
       <section className="py-12">
         <div className="max-w-6xl mx-auto px-6">
           {filteredFacts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
               {filteredFacts.map((fact) => {
                 const IconComponent = iconMap[fact.icon || "trees"] || Trees
+                const isExpanded = expandedId === fact.id
+                const factText = fact.fact || ""
+                const isLong = factText.length > 150
+
+                const renderText = (text: string) =>
+                  text.split(/(https?:\/\/[^\s]+)/g).map((part: string, i: number) =>
+                    /^https?:\/\//.test(part) ? (
+                      <a key={i} href={part} target="_blank" rel="noopener noreferrer"
+                        className="text-green-700 underline hover:text-green-900 break-all">
+                        {part}
+                      </a>
+                    ) : part
+                  )
+
                 return (
                   <article
                     key={fact.id}
-                    className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                    className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden"
                   >
-                    {/* Слика као thumbnail */}
                     {fact.image && (
-                      <div className="mb-4 -mx-6 -mt-6">
-                        <img
-                          src={fact.image || "/placeholder.svg"}
-                          alt={fact.title}
-                          className="w-full h-40 object-cover rounded-t-xl"
-                        />
-                      </div>
+                      <img src={fact.image} alt={fact.title}
+                        className="w-full h-40 object-cover" />
                     )}
-                    <div className="flex items-start gap-4 mb-4">
-                      <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <IconComponent className="w-6 h-6 text-green-700" />
+                    <div className="p-5">
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <IconComponent className="w-5 h-5 text-green-700" />
+                        </div>
+                        <div>
+                          <span className="inline-block px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-semibold mb-1">
+                            {fact.category_label || fact.categoryLabel}
+                          </span>
+                          <h2 className="text-base font-bold text-gray-900">{fact.title}</h2>
+                        </div>
                       </div>
-                      <div>
-                        <span className="inline-block px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-semibold mb-2">
-                          {fact.category_label || fact.categoryLabel}
-                        </span>
-                        <h2 className="text-lg font-bold text-gray-900">{fact.title}</h2>
+
+                      <p className="text-gray-600 text-sm leading-relaxed mb-3">
+                        {isExpanded || !isLong
+                          ? renderText(factText)
+                          : renderText(factText.slice(0, 150) + "...")}
+                      </p>
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-400">{fact.date}</span>
+                        {isLong && (
+                          <button
+                            onClick={() => setExpandedId(isExpanded ? null : fact.id)}
+                            className="text-green-700 hover:text-green-900 text-xs font-semibold"
+                          >
+                            {isExpanded ? "▲ Сакриј" : "▼ Читај више"}
+                          </button>
+                        )}
                       </div>
-                    </div>
-
-                    <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                      {fact.fact?.split(/(https?:\/\/[^\s]+)/g).map((part: string, i: number) =>
-                        /^https?:\/\//.test(part) ? (
-                          <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-green-700 underline hover:text-green-900 break-all">
-                            {part}
-                          </a>
-                        ) : part
-                      )}
-                    </p>
-
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-gray-400">{fact.date}</span>
-                      {/* Замена "Опширније" линка са линком на Lana Lana вијести умјесто детаљне странице занимљивости */}
-                      <Link href="/news" className="text-green-700 hover:text-green-800 font-semibold text-sm">
-                        Види вијести →
-                      </Link>
                     </div>
                   </article>
                 )

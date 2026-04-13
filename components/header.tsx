@@ -5,10 +5,10 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 import { Menu, X } from "lucide-react"
-import { getAllVijesti, getAllZanimljivosti, getAllDokumenti } from "@/lib/supabase-client"
+import { getAllVijesti, getAllZanimljivosti, getAllDokumenti, getAllPozivi } from "@/lib/supabase-client"
 
 function useUnreadCounts(pathname: string) {
-  const [counts, setCounts] = useState({ news: 0, zanimljivosti: 0, dokumenti: 0 })
+  const [counts, setCounts] = useState({ news: 0, zanimljivosti: 0, dokumenti: 0, pozivi: 0 })
 
   useEffect(() => {
     // Ažuriraj lastVisit za trenutnu stranicu PRIJE računanja
@@ -16,17 +16,20 @@ function useUnreadCounts(pathname: string) {
     if (pathname === "/news")          localStorage.setItem("lastVisit_news", now)
     if (pathname === "/zanimljivosti") localStorage.setItem("lastVisit_zanimljivosti", now)
     if (pathname === "/dokumenti")     localStorage.setItem("lastVisit_dokumenti", now)
+    if (pathname === "/pozivi")        localStorage.setItem("lastVisit_pozivi", now)
 
     async function calculate() {
       // Čitaj timestamps NAKON što smo ih ažurirali
-      const lastNews  = parseInt(localStorage.getItem("lastVisit_news") || "0")
-      const lastZanim = parseInt(localStorage.getItem("lastVisit_zanimljivosti") || "0")
-      const lastDoks  = parseInt(localStorage.getItem("lastVisit_dokumenti") || "0")
+      const lastNews   = parseInt(localStorage.getItem("lastVisit_news") || "0")
+      const lastZanim  = parseInt(localStorage.getItem("lastVisit_zanimljivosti") || "0")
+      const lastDoks   = parseInt(localStorage.getItem("lastVisit_dokumenti") || "0")
+      const lastPozivi = parseInt(localStorage.getItem("lastVisit_pozivi") || "0")
 
-      const [vijesti, zanim, doks] = await Promise.all([
+      const [vijesti, zanim, doks, pozivi] = await Promise.all([
         getAllVijesti(),
         getAllZanimljivosti(),
         getAllDokumenti(),
+        getAllPozivi(),
       ])
 
       const ts = (item: any) => new Date(item.created_at).getTime() || 0
@@ -35,6 +38,7 @@ function useUnreadCounts(pathname: string) {
         news:          vijesti.filter(v => ts(v) > lastNews).length,
         zanimljivosti: zanim.filter(z => ts(z) > lastZanim).length,
         dokumenti:     doks.filter(d => ts(d) > lastDoks).length,
+        pozivi:        pozivi.filter(p => ts(p) > lastPozivi).length,
       })
     }
     calculate()
@@ -62,6 +66,7 @@ export function Header() {
     "/news":          unread.news,
     "/zanimljivosti": unread.zanimljivosti,
     "/dokumenti":     unread.dokumenti,
+    "/pozivi":        unread.pozivi,
   }
 
   const scrollToSection = (sectionId: string) => {
@@ -85,6 +90,7 @@ export function Header() {
     { href: "/news", label: "Вијести" },
     { href: "/zanimljivosti", label: "Занимљивости" },
     { href: "/dokumenti", label: "Документи" },
+    { href: "/pozivi", label: "Позиви" },
     { href: "/o-nama", label: "О нама" },
     { href: "/kontakt", label: "Контакт" },
   ]

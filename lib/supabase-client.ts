@@ -177,3 +177,31 @@ export async function deleteDokument(id: number) {
 
   return true;
 }
+
+// Pozivi funkcije
+export async function getAllPozivi() {
+  const { data, error } = await supabase
+    .from("pozivi")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) { console.error("[v0] Greska pri ucitavanju poziva:", error); return []; }
+  return data || [];
+}
+
+export async function createPoziv(poziv: any) {
+  const { data, error } = await supabase.from("pozivi").insert([poziv]).select().single();
+  if (error) { console.error("[v0] Greska pri kreiranju poziva:", error); return null; }
+  return data;
+}
+
+export async function updatePoziv(id: number, updates: any) {
+  const { data, error } = await supabase.from("pozivi").update(updates).eq("id", id).select().single();
+  if (error) { console.error("[v0] Greska pri azuriranju poziva:", error); return null; }
+  return data;
+}
+
+export async function deletePoziv(id: number) {
+  const { error } = await supabase.from("pozivi").delete().eq("id", id);
+  if (error) { console.error("[v0] Greska pri brisanju poziva:", error); return false; }
+  return true;
+}

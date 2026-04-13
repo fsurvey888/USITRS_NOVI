@@ -3,19 +3,12 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Trash2, Edit, Plus, FileText, Sparkles, FolderOpen, Settings, Calendar } from "lucide-react"
+import { Trash2, Edit, Plus, FileText, Sparkles, FolderOpen, Settings, Calendar, Bell } from "lucide-react"
 import {
-  getAllVijesti,
-  createVijest,
-  updateVijest,
-  deleteVijest,
-  getAllZanimljivosti,
-  createZanimljivost,
-  updateZanimljivost,
-  deleteZanimljivost,
-  getAllDokumenti,
-  createDokument,
-  deleteDokument,
+  getAllVijesti, createVijest, updateVijest, deleteVijest,
+  getAllZanimljivosti, createZanimljivost, updateZanimljivost, deleteZanimljivost,
+  getAllDokumenti, createDokument, deleteDokument,
+  getAllPozivi, createPoziv, updatePoziv, deletePoziv,
 } from "@/lib/supabase-client"
 
 export default function AdminPage() {
@@ -25,7 +18,7 @@ export default function AdminPage() {
   const [password, setPassword] = useState("")
   const [loginError, setLoginError] = useState("")
 
-  const [activeTab, setActiveTab] = useState<"news" | "funfacts" | "documents" | "manage">("news")
+  const [activeTab, setActiveTab] = useState<"news" | "funfacts" | "documents" | "pozivi" | "manage">("news")
   const [saving, setSaving] = useState(false)
 
   // Вијести форма
@@ -61,9 +54,16 @@ export default function AdminPage() {
     fileType: "pdf",
   })
 
+  // Позиви форма
+  const [pozivForm, setPozivForm] = useState({
+    title: "", description: "", category: "projekti", deadline: "", link: "", date: "",
+  })
+  const [editingPozivId, setEditingPozivId] = useState<number | null>(null)
+
   // Сачуване ставке за управљање
   const [savedNews, setSavedNews] = useState<any[]>([])
   const [savedFunFacts, setSavedFunFacts] = useState<any[]>([])
+  const [savedPozivi, setSavedPozivi] = useState<any[]>([])
   const [savedDocuments, setSavedDocuments] = useState<any[]>([])
 
   const [message, setMessage] = useState("")
@@ -83,14 +83,13 @@ export default function AdminPage() {
   useEffect(() => {
     if (!isLoggedIn) return
     async function loadAll() {
-      const [news, facts, docs] = await Promise.all([
-        getAllVijesti(),
-        getAllZanimljivosti(),
-        getAllDokumenti(),
+      const [news, facts, docs, poz] = await Promise.all([
+        getAllVijesti(), getAllZanimljivosti(), getAllDokumenti(), getAllPozivi(),
       ])
       setSavedNews(news)
       setSavedFunFacts(facts)
       setSavedDocuments(docs)
+      setSavedPozivi(poz)
     }
     loadAll()
   }, [isLoggedIn])
@@ -304,6 +303,52 @@ export default function AdminPage() {
     }
   }
 
+  const handleAddPoziv = async () => {
+    if (!pozivForm.title) { setMessage("⚠ Унесите наслов позива."); return }
+    setSaving(true)
+    const formattedDate = pozivForm.date ? formatDate(pozivForm.date) : new Date().toLocaleDateString("sr-RS")
+    const payload = {
+      title: pozivForm.title,
+      description: pozivForm.description,
+      category: pozivForm.category,
+      category_label: categoryLabels[pozivForm.category] || pozivForm.category,
+      deadline: pozivForm.deadline ? formatDate(pozivForm.deadline) : "",
+      link: pozivForm.link,
+      date: formattedDate,
+    }
+    let result
+    if (editingPozivId) {
+      result = await updatePoziv(editingPozivId, payload)
+      if (result) { setSavedPozivi(prev => prev.map(p => p.id === editingPozivId ? result : p)); setMessage("✓ Позив је измијењен!") }
+      setEditingPozivId(null)
+    } else {
+      result = await createPoziv(payload)
+      if (result) { setSavedPozivi(prev => [result, ...prev]); setMessage("✓ Позив је додат!") }
+    }
+    setPozivForm({ title: "", description: "", category: "projekti", deadline: "", link: "", date: "" })
+    setSaving(false)
+  }
+
+  const handleDeletePoziv = async (id: number) => {
+    const ok = await deletePoziv(id)
+    if (ok) { setSavedPozivi(prev => prev.filter(p => p.id !== id)); setMessage("Позив је обрисан!") }
+  }
+
+  const handleEditPoziv = (item: any) => {
+    const toInput = (d: string) => {
+      const p = (d || "").split(".")
+      return p.length >= 3 ? `${p[2]}-${p[1]}-${p[0]}` : ""
+    }
+    setPozivForm({
+      title: item.title || "", description: item.description || "",
+      category: item.category || "projekti", deadline: toInput(item.deadline),
+      link: item.link || "", date: toInput(item.date),
+    })
+    setEditingPozivId(item.id)
+    setActiveTab("pozivi")
+    setMessage("Измијените позив и кликните Сачувај измјене.")
+  }
+
   const handleEditNews = (item: any) => {
     const dateParts = (item.date || "").split(".")
     const dateForInput =
@@ -440,6 +485,15 @@ export default function AdminPage() {
           >
             <FolderOpen className="w-4 h-4" />
             Додај документ
+          </button>
+          <button
+            onClick={() => setActiveTab("pozivi")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+              activeTab === "pozivi" ? "bg-green-800 text-white" : "bg-white text-gray-700 hover:bg-green-100"
+            }`}
+          >
+            <Bell className="w-4 h-4" />
+            {editingPozivId ? "Измијени позив" : "Додај позив"}
           </button>
           <button
             onClick={() => setActiveTab("manage")}
@@ -743,6 +797,82 @@ export default function AdminPage() {
           </div>
         )}
 
+        {/* Форма за позиве */}
+        {activeTab === "pozivi" && (
+          <div className="bg-white p-6 rounded-xl shadow-md">
+            <h2 className="text-xl font-bold text-green-800 mb-4">
+              {editingPozivId ? "Измијени позив" : "Додај нови позив"}
+            </h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Наслов позива</label>
+                <input type="text" value={pozivForm.title}
+                  onChange={(e) => setPozivForm({ ...pozivForm, title: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                  placeholder="Нпр. Позив за достављање научних радова" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Опис / Детаљи</label>
+                <textarea value={pozivForm.description}
+                  onChange={(e) => setPozivForm({ ...pozivForm, description: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                  rows={5} placeholder="Детаљан опис позива..." />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Категорија</label>
+                  <select value={pozivForm.category}
+                    onChange={(e) => setPozivForm({ ...pozivForm, category: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                    <option value="projekti">Пројекти</option>
+                    <option value="clanci">Научни чланци</option>
+                    <option value="studije">Студије</option>
+                    <option value="ostalo">Остало</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Датум објаве</label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input type="date" value={pozivForm.date}
+                      onChange={(e) => setPozivForm({ ...pozivForm, date: e.target.value })}
+                      className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Рок за пријаву</label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input type="date" value={pozivForm.deadline}
+                      onChange={(e) => setPozivForm({ ...pozivForm, deadline: e.target.value })}
+                      className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" />
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Линк за детаље (опционално)</label>
+                <input type="text" value={pozivForm.link}
+                  onChange={(e) => setPozivForm({ ...pozivForm, link: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                  placeholder="https://..." />
+              </div>
+              <div className="flex gap-3">
+                <button onClick={handleAddPoziv} disabled={saving}
+                  className="flex items-center gap-2 px-6 py-3 bg-green-800 text-white rounded-lg hover:bg-green-700 font-semibold disabled:opacity-50">
+                  <Plus className="w-5 h-5" />
+                  {saving ? "Снима..." : editingPozivId ? "Сачувај измјене" : "Додај позив"}
+                </button>
+                {editingPozivId && (
+                  <button onClick={() => { setEditingPozivId(null); setPozivForm({ title: "", description: "", category: "projekti", deadline: "", link: "", date: "" }); setMessage("") }}
+                    className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-100 font-semibold">
+                    Откажи
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Управљање садржајем */}
         {activeTab === "manage" && (
           <div className="space-y-8">
@@ -840,6 +970,36 @@ export default function AdminPage() {
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+            {/* Позиви */}
+            <div className="bg-white p-6 rounded-xl shadow-md">
+              <h2 className="text-xl font-bold text-green-800 mb-4">Позиви у бази ({savedPozivi.length})</h2>
+              {savedPozivi.length === 0 ? (
+                <p className="text-gray-500">Нема позива у бази.</p>
+              ) : (
+                <div className="space-y-3">
+                  {savedPozivi.map((item) => (
+                    <div key={item.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{item.title}</h3>
+                        <p className="text-sm text-gray-500">{item.date}{item.deadline ? ` | Рок: ${item.deadline}` : ""}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => handleEditPoziv(item)}
+                          className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg" title="Измијени">
+                          <Edit className="w-5 h-5" />
+                        </button>
+                        <button onClick={() => handleDeletePoziv(item.id)}
+                          className="p-2 text-red-600 hover:bg-red-100 rounded-lg" title="Обриши">
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
