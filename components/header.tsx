@@ -17,13 +17,6 @@ function useUnreadCounts(pathname: string) {
     if (pathname === "/zanimljivosti") localStorage.setItem("lastVisit_zanimljivosti", now)
     if (pathname === "/dokumenti")     localStorage.setItem("lastVisit_dokumenti", now)
 
-    const parseDate = (d: string) => {
-      if (!d) return 0
-      const p = d.split(".")
-      if (p.length === 3) return new Date(`${p[2]}-${p[1]}-${p[0]}`).getTime()
-      return new Date(d).getTime() || 0
-    }
-
     async function calculate() {
       // Čitaj timestamps NAKON što smo ih ažurirali
       const lastNews  = parseInt(localStorage.getItem("lastVisit_news") || "0")
@@ -36,10 +29,12 @@ function useUnreadCounts(pathname: string) {
         getAllDokumenti(),
       ])
 
+      const ts = (item: any) => new Date(item.created_at).getTime() || 0
+
       setCounts({
-        news:          vijesti.filter(v => parseDate(v.date) > lastNews).length,
-        zanimljivosti: zanim.filter(z => parseDate(z.date) > lastZanim).length,
-        dokumenti:     doks.filter(d => parseDate(d.upload_date) > lastDoks).length,
+        news:          vijesti.filter(v => ts(v) > lastNews).length,
+        zanimljivosti: zanim.filter(z => ts(z) > lastZanim).length,
+        dokumenti:     doks.filter(d => ts(d) > lastDoks).length,
       })
     }
     calculate()
