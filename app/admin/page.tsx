@@ -327,6 +327,7 @@ export default function AdminPage() {
     } else {
       result = await createPoziv(payload)
       if (result) { setSavedPozivi(prev => [result, ...prev]); setMessage("✓ Позив је додат!") }
+      else { setMessage("⚠ Грешка при додавању позива. Провјерите Supabase.") }
     }
     setPozivForm({ title: "", description: "", category: "projekti", deadline: "", link: "", date: "" })
     setSaving(false)
