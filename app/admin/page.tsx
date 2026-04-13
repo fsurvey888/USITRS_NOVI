@@ -139,6 +139,9 @@ export default function AdminPage() {
     zapisnici: "Записници",
     izvjestaji: "Извјештаји",
     obrasci: "Обрасци",
+    clanci: "Научни чланци",
+    studije: "Студије",
+    ostalo: "Остало",
   }
 
   const formatDate = (dateString: string): string => {
