@@ -975,7 +975,6 @@ export default function AdminPage() {
                 </div>
               )}
             </div>
-          </div>
 
             {/* Позиви */}
             <div className="bg-white p-6 rounded-xl shadow-md">
