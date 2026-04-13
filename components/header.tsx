@@ -11,17 +11,24 @@ function useUnreadCounts(pathname: string) {
   const [counts, setCounts] = useState({ news: 0, zanimljivosti: 0, dokumenti: 0 })
 
   useEffect(() => {
-    async function calculate() {
-      const lastNews   = parseInt(localStorage.getItem("lastVisit_news") || "0")
-      const lastZanim  = parseInt(localStorage.getItem("lastVisit_zanimljivosti") || "0")
-      const lastDoks   = parseInt(localStorage.getItem("lastVisit_dokumenti") || "0")
+    // Ažuriraj lastVisit za trenutnu stranicu PRIJE računanja
+    const now = Date.now().toString()
+    if (pathname === "/news")          localStorage.setItem("lastVisit_news", now)
+    if (pathname === "/zanimljivosti") localStorage.setItem("lastVisit_zanimljivosti", now)
+    if (pathname === "/dokumenti")     localStorage.setItem("lastVisit_dokumenti", now)
 
-      const parseDate = (d: string) => {
-        if (!d) return 0
-        const p = d.split(".")
-        if (p.length === 3) return new Date(`${p[2]}-${p[1]}-${p[0]}`).getTime()
-        return new Date(d).getTime() || 0
-      }
+    const parseDate = (d: string) => {
+      if (!d) return 0
+      const p = d.split(".")
+      if (p.length === 3) return new Date(`${p[2]}-${p[1]}-${p[0]}`).getTime()
+      return new Date(d).getTime() || 0
+    }
+
+    async function calculate() {
+      // Čitaj timestamps NAKON što smo ih ažurirali
+      const lastNews  = parseInt(localStorage.getItem("lastVisit_news") || "0")
+      const lastZanim = parseInt(localStorage.getItem("lastVisit_zanimljivosti") || "0")
+      const lastDoks  = parseInt(localStorage.getItem("lastVisit_dokumenti") || "0")
 
       const [vijesti, zanim, doks] = await Promise.all([
         getAllVijesti(),
@@ -36,20 +43,6 @@ function useUnreadCounts(pathname: string) {
       })
     }
     calculate()
-  }, [pathname])
-
-  // Kad korisnik posjeti stranicu, resetuj brojač
-  useEffect(() => {
-    const now = Date.now().toString()
-    if (pathname === "/news")          localStorage.setItem("lastVisit_news", now)
-    if (pathname === "/zanimljivosti") localStorage.setItem("lastVisit_zanimljivosti", now)
-    if (pathname === "/dokumenti")     localStorage.setItem("lastVisit_dokumenti", now)
-
-    setCounts(prev => ({
-      news:          pathname === "/news"          ? 0 : prev.news,
-      zanimljivosti: pathname === "/zanimljivosti" ? 0 : prev.zanimljivosti,
-      dokumenti:     pathname === "/dokumenti"    ? 0 : prev.dokumenti,
-    }))
   }, [pathname])
 
   return counts
