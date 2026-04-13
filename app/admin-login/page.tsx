@@ -17,19 +17,17 @@ export default function AdminLoginPage() {
     setLoading(true)
 
     try {
-      // Верификуј креденцијале - администраторови подаци
-      const correctUsername = "predsjednika"
-      const correctPassword = "usit2025"
-      
-      if (username === correctUsername && password === correctPassword) {
-        // Постави логин статус
+      const res = await fetch("/api/admin-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      })
+      if (res.ok) {
         localStorage.setItem("adminLoggedIn", "true")
         localStorage.setItem("adminLoginTime", Date.now().toString())
-        
-        // Преусмери на админ панел
         router.push("/admin")
       } else {
-        setError("Неиспрaвно корисничко име или лозинка")
+        setError("Неиспрaвно корисничко ime или лозинка")
       }
     } catch (err) {
       setError("Грешка приликом логирања. Молимо покушајте поново.")
@@ -57,7 +55,7 @@ export default function AdminLoginPage() {
             {/* Username Field */}
             <div>
               <label htmlFor="username" className="block text-sm font-semibold text-gray-700 mb-2">
-                Корисничко име
+                Корисничко ime
               </label>
               <input
                 id="username"
@@ -65,7 +63,7 @@ export default function AdminLoginPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-colors"
-                placeholder="Унесите корисничко име"
+                placeholder="Унесите корисничко ime"
                 disabled={loading}
               />
             </div>
