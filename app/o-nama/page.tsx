@@ -84,6 +84,67 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* Historijat */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-4xl font-bold text-green-800 mb-10 text-center">Историјат УШИТ-а од оснивања</h2>
+          <div className="max-w-3xl mx-auto space-y-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex gap-5">
+              <div className="flex-shrink-0 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-800 font-bold text-lg">
+                1998
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 mb-1">Оснивање ДИТ-а</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Удружење је prvобитно основано у јануару 1998. године под називом ДИТ (Друштво инжењера и техничара).
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex gap-5">
+              <div className="flex-shrink-0 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-800 font-bold text-lg">
+                2004
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 mb-1">Оснивачка скупштина УШИТ-а</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Оснивачка скупштина УШИТ-а одржана је 27.12.2004. године, када друштво добија садашњи назив
+                  „Удружење шумарских инжењера и техничара Републике Српске". Од 2004. године, функцију prvог
+                  предсједника Управног одбора обављао је Споменко Стојановић.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex gap-5">
+              <div className="flex-shrink-0 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-800 font-bold text-lg">
+                UO
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 mb-1">Предсједници Управног одбора</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Након Споменка Стојановића, ту дужност су обављали Милан Матарауга и Срђан Кашић. На посљедњој
+                  Скупштини одржаној 23.05.2025. године, за предсједника Управног одбора изабран је{" "}
+                  <strong className="text-green-800">Срђан Дражић</strong>.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex gap-5">
+              <div className="flex-shrink-0 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-800 font-bold text-lg">
+                SK
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 mb-1">Предсједници Скупштине</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Предсједник Скупштине bio је Милорад Јагодић све до посљедње Скупштине, када је на ту функцију
+                  изабран <strong className="text-green-800">Немања Милинковић</strong>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Activities */}
       <section className="py-16 bg-green-50">
         <div className="max-w-6xl mx-auto px-6">
