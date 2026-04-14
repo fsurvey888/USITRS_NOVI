@@ -117,7 +117,7 @@ export default function AboutPage() {
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex gap-5">
               <div className="flex-shrink-0 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-800 font-bold text-lg">
-                UO
+                УО
               </div>
               <div>
                 <h3 className="font-bold text-gray-900 mb-1">Предсједници Управног одбора</h3>
@@ -131,7 +131,7 @@ export default function AboutPage() {
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex gap-5">
               <div className="flex-shrink-0 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-800 font-bold text-lg">
-                SK
+                СК
               </div>
               <div>
                 <h3 className="font-bold text-gray-900 mb-1">Предсједници Скупштине</h3>
