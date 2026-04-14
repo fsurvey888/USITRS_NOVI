@@ -205,3 +205,47 @@ export async function deletePoziv(id: number) {
   if (error) { console.error("[v0] Greska pri brisanju poziva:", error); return false; }
   return true;
 }
+
+// Prijave clanova
+export async function createClanPrijava(data: {
+  ime: string;
+  prezime: string;
+  email: string;
+  telefon: string;
+  struka: string;
+  napomena: string;
+}) {
+  const { data: result, error } = await supabase
+    .from("clanovi_prijave")
+    .insert([{ ...data, status: "na_cekanju" }])
+    .select()
+    .single();
+  if (error) { console.error("[v0] Greska pri prijavi clana:", error); return null; }
+  return result;
+}
+
+export async function getAllClanPrijave() {
+  const { data, error } = await supabase
+    .from("clanovi_prijave")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) { console.error("[v0] Greska pri ucitavanju prijava:", error); return []; }
+  return data || [];
+}
+
+export async function updateClanPrijavaStatus(id: number, status: string) {
+  const { data, error } = await supabase
+    .from("clanovi_prijave")
+    .update({ status })
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) { console.error("[v0] Greska pri azuriranju statusa:", error); return null; }
+  return data;
+}
+
+export async function deleteClanPrijava(id: number) {
+  const { error } = await supabase.from("clanovi_prijave").delete().eq("id", id);
+  if (error) { console.error("[v0] Greska pri brisanju prijave:", error); return false; }
+  return true;
+}

@@ -3,12 +3,13 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Trash2, Edit, Plus, FileText, Sparkles, FolderOpen, Settings, Calendar, Bell } from "lucide-react"
+import { Trash2, Edit, Plus, FileText, Sparkles, FolderOpen, Settings, Calendar, Bell, Users, CheckCircle, XCircle, Clock } from "lucide-react"
 import {
   getAllVijesti, createVijest, updateVijest, deleteVijest,
   getAllZanimljivosti, createZanimljivost, updateZanimljivost, deleteZanimljivost,
   getAllDokumenti, createDokument, deleteDokument,
   getAllPozivi, createPoziv, updatePoziv, deletePoziv,
+  getAllClanPrijave, updateClanPrijavaStatus, deleteClanPrijava,
 } from "@/lib/supabase-client"
 
 export default function AdminPage() {
@@ -18,7 +19,7 @@ export default function AdminPage() {
   const [password, setPassword] = useState("")
   const [loginError, setLoginError] = useState("")
 
-  const [activeTab, setActiveTab] = useState<"news" | "funfacts" | "documents" | "pozivi" | "manage">("news")
+  const [activeTab, setActiveTab] = useState<"news" | "funfacts" | "documents" | "pozivi" | "clanovi" | "manage">("news")
   const [saving, setSaving] = useState(false)
 
   // Вијести форма
@@ -65,6 +66,7 @@ export default function AdminPage() {
   const [savedFunFacts, setSavedFunFacts] = useState<any[]>([])
   const [savedPozivi, setSavedPozivi] = useState<any[]>([])
   const [savedDocuments, setSavedDocuments] = useState<any[]>([])
+  const [clanPrijave, setClanPrijave] = useState<any[]>([])
 
   const [message, setMessage] = useState("")
 
@@ -83,13 +85,14 @@ export default function AdminPage() {
   useEffect(() => {
     if (!isLoggedIn) return
     async function loadAll() {
-      const [news, facts, docs, poz] = await Promise.all([
-        getAllVijesti(), getAllZanimljivosti(), getAllDokumenti(), getAllPozivi(),
+      const [news, facts, docs, poz, prijave] = await Promise.all([
+        getAllVijesti(), getAllZanimljivosti(), getAllDokumenti(), getAllPozivi(), getAllClanPrijave(),
       ])
       setSavedNews(news)
       setSavedFunFacts(facts)
       setSavedDocuments(docs)
       setSavedPozivi(poz)
+      setClanPrijave(prijave)
     }
     loadAll()
   }, [isLoggedIn])
@@ -500,6 +503,20 @@ export default function AdminPage() {
             {editingPozivId ? "Измијени позив" : "Додај позив"}
           </button>
           <button
+            onClick={() => setActiveTab("clanovi")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors relative ${
+              activeTab === "clanovi" ? "bg-green-800 text-white" : "bg-white text-gray-700 hover:bg-green-100"
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            Пријаве за чланство
+            {clanPrijave.filter(p => p.status === "na_cekanju").length > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                {clanPrijave.filter(p => p.status === "na_cekanju").length}
+              </span>
+            )}
+          </button>
+          <button
             onClick={() => setActiveTab("manage")}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
               activeTab === "manage" ? "bg-green-800 text-white" : "bg-white text-gray-700 hover:bg-green-100"
@@ -874,6 +891,99 @@ export default function AdminPage() {
                 )}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Пријаве за чланство */}
+        {activeTab === "clanovi" && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-xl font-bold text-green-800">
+                Пријаве за чланство ({clanPrijave.length})
+              </h2>
+              <div className="flex gap-3 text-sm">
+                <span className="flex items-center gap-1 text-amber-600"><Clock className="w-4 h-4" /> На чекању: {clanPrijave.filter(p => p.status === "na_cekanju").length}</span>
+                <span className="flex items-center gap-1 text-green-600"><CheckCircle className="w-4 h-4" /> Одобрено: {clanPrijave.filter(p => p.status === "odobreno").length}</span>
+                <span className="flex items-center gap-1 text-red-500"><XCircle className="w-4 h-4" /> Одбијено: {clanPrijave.filter(p => p.status === "odbijeno").length}</span>
+              </div>
+            </div>
+
+            {clanPrijave.length === 0 ? (
+              <div className="bg-white p-10 rounded-xl shadow-sm text-center text-gray-400">
+                <Users className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                <p>Нема пријава за чланство.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {clanPrijave.map((p) => {
+                  const statusColor = p.status === "odobreno" ? "border-green-300 bg-green-50"
+                    : p.status === "odbijeno" ? "border-red-200 bg-red-50"
+                    : "border-amber-200 bg-amber-50"
+                  const statusLabel = p.status === "odobreno" ? "Одобрено"
+                    : p.status === "odbijeno" ? "Одбијено"
+                    : "На чекању"
+                  const statusBadge = p.status === "odobreno" ? "bg-green-100 text-green-700"
+                    : p.status === "odbijeno" ? "bg-red-100 text-red-600"
+                    : "bg-amber-100 text-amber-700"
+                  return (
+                    <div key={p.id} className={`border rounded-xl p-5 ${statusColor}`}>
+                      <div className="flex items-start justify-between gap-4 flex-wrap">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-3 mb-1 flex-wrap">
+                            <h3 className="font-bold text-gray-900 text-lg">{p.ime} {p.prezime}</h3>
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${statusBadge}`}>{statusLabel}</span>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-0.5">
+                            <strong>Е-маил:</strong>{" "}
+                            <a href={`mailto:${p.email}`} className="text-green-700 hover:underline">{p.email}</a>
+                          </p>
+                          {p.telefon && <p className="text-sm text-gray-600 mb-0.5"><strong>Телефон:</strong> {p.telefon}</p>}
+                          {p.struka && <p className="text-sm text-gray-600 mb-0.5"><strong>Струка:</strong> {p.struka}</p>}
+                          {p.napomena && <p className="text-sm text-gray-500 mt-1 italic">"{p.napomena}"</p>}
+                          <p className="text-xs text-gray-400 mt-2">
+                            {new Date(p.created_at).toLocaleDateString("sr-RS", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                          </p>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          {p.status !== "odobreno" && (
+                            <button
+                              onClick={async () => {
+                                const r = await updateClanPrijavaStatus(p.id, "odobreno")
+                                if (r) setClanPrijave(prev => prev.map(x => x.id === p.id ? { ...x, status: "odobreno" } : x))
+                              }}
+                              className="flex items-center gap-1 px-3 py-1.5 bg-green-700 text-white text-sm rounded-lg hover:bg-green-600 whitespace-nowrap"
+                            >
+                              <CheckCircle className="w-4 h-4" /> Одобри
+                            </button>
+                          )}
+                          {p.status !== "odbijeno" && (
+                            <button
+                              onClick={async () => {
+                                const r = await updateClanPrijavaStatus(p.id, "odbijeno")
+                                if (r) setClanPrijave(prev => prev.map(x => x.id === p.id ? { ...x, status: "odbijeno" } : x))
+                              }}
+                              className="flex items-center gap-1 px-3 py-1.5 bg-red-600 text-white text-sm rounded-lg hover:bg-red-500 whitespace-nowrap"
+                            >
+                              <XCircle className="w-4 h-4" /> Одбиј
+                            </button>
+                          )}
+                          <button
+                            onClick={async () => {
+                              if (!confirm("Обриши ову пријаву?")) return
+                              const ok = await deleteClanPrijava(p.id)
+                              if (ok) setClanPrijave(prev => prev.filter(x => x.id !== p.id))
+                            }}
+                            className="flex items-center gap-1 px-3 py-1.5 bg-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-300 whitespace-nowrap"
+                          >
+                            <Trash2 className="w-4 h-4" /> Обриши
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
         )}
 

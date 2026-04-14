@@ -1,4 +1,5 @@
 import { Mail, Phone, MapPin } from "lucide-react"
+import PrijavaForm from "./prijava-form"
 
 export const metadata = {
   title: "Контакт - Удружење ШТ РС",
@@ -102,6 +103,31 @@ export default function KontaktPage() {
                   <p className="text-lg font-semibold text-gray-900">562-001-00000-337-17</p>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Prijava za clanstvo */}
+      <section className="py-16 bg-green-50">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+            <div>
+              <h2 className="text-3xl font-bold text-green-800 mb-4">Постаните члан УШИТ-а</h2>
+              <p className="text-gray-600 leading-relaxed mb-6">
+                Придружите се Удружењу шумарских инжењера и техничара Републике Српске. Чланство вам омогућава
+                активно учешће у раду удружења, приступ стручним публикацијама, семинарима и конференцијама.
+              </p>
+              <ul className="space-y-3 text-gray-600">
+                <li className="flex gap-3"><span className="text-green-700 font-bold mt-0.5">✓</span><span>Учешће на стручним скуповима и конференцијама</span></li>
+                <li className="flex gap-3"><span className="text-green-700 font-bold mt-0.5">✓</span><span>Приступ стручним публикацијама и истраживањима</span></li>
+                <li className="flex gap-3"><span className="text-green-700 font-bold mt-0.5">✓</span><span>Умрежавање са колегама из струке</span></li>
+                <li className="flex gap-3"><span className="text-green-700 font-bold mt-0.5">✓</span><span>Могућност учешћа у пројектима удружења</span></li>
+              </ul>
+            </div>
+            <div className="bg-white rounded-xl shadow-md p-8">
+              <h3 className="text-xl font-bold text-green-800 mb-6">Пријавни образац</h3>
+              <PrijavaForm />
             </div>
           </div>
         </div>
