@@ -136,7 +136,7 @@ export default function KontaktPage() {
       {/* Working Hours */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-green-800 mb-8 text-center">Радно време</h2>
+          <h2 className="text-3xl font-bold text-green-800 mb-8 text-center">Радно вријеме</h2>
           <div className="bg-white rounded-xl p-8 shadow-md max-w-2xl mx-auto">
             <div className="space-y-4 text-lg">
               <div className="flex justify-between border-b border-gray-200 pb-3">
